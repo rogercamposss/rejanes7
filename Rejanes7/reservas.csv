@@ -1,0 +1,6 @@
+customer_name,table_number,status,reservation_time
+João Silva,5,confirmed,2024-10-18 19:00:00
+Maria Costa,2,pending,2024-10-18 18:30:00
+Pedro Souza,8,confirmed,2024-10-18 20:00:00
+Ana Pereira,10,canceled,2024-10-18 21:00:00
+Carlos Lima,4,confirmed,2024-10-18 19:45:00
