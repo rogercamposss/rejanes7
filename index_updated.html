@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurante Exemplo</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.15.6/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+    <!-- Cabeçalho Fixo -->
+    <header>
+        <div class="logo">
+            <a href="#home">
+                <img src="logo.png" alt="Logo do Restaurante Exemplo">
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#reservas">Reservas</a></li>
+                <li><a href="#sobre-nos">Sobre-Nós</a></li>
+                <li><a href="#contato">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Seção Reservas -->
+    <section id="reservas">
+        <h2 class="s">Escolha sua Mesa</h2>
+        <div class="table-layout" id="table-layout"></div>
+
+        <!-- Formulário de Reserva -->
+        <div class="reservation-container">
+            <h2>Detalhes da Reserva</h2>
+            <div id="reservas-list"><!-- As reservas aparecerão aqui --></div>
+        </div>
+    </section>
+
+    <!-- Script para conexão e exibição das reservas do Supabase -->
+    <script>
+        // Inicializar o Supabase com a URL e chave fornecidas
+        const supabaseUrl = 'https://gyfobdcobwfxomgsapxf.supabase.co';
+        const supabaseKey = '91ec26b5ca3463242fb56ceb10f2faf0';
+        const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Função para buscar as reservas
+        async function fetchReservas() {
+            let { data: reservas, error } = await supabase
+                .from('reservas')
+                .select('*');  // busca todos os dados da tabela 'reservas'
+
+            if (error) {
+                console.error('Erro ao buscar reservas:', error);
+            } else {
+                console.log('Reservas:', reservas);
+                const reservasContainer = document.getElementById('reservas-list');
+                reservasContainer.innerHTML = '';  // Limpa o container para não duplicar dados
+                reservas.forEach(reserva => {
+                    const reservaElement = document.createElement('div');
+                    reservaElement.innerHTML = `
+                        <p>Cliente: ${reserva.customer_name}</p>
+                        <p>Mesa: ${reserva.table_number}</p>
+                        <p>Status: ${reserva.status}</p>
+                        <p>Data/Hora: ${new Date(reserva.reservation_time).toLocaleString()}</p>
+                    `;
+                    reservasContainer.appendChild(reservaElement);
+                });
+            }
+        }
+
+        // Chama a função para buscar as reservas quando a página carrega
+        window.onload = fetchReservas;
+    </script>
+</body>
+</html>
