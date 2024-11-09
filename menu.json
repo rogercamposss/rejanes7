@@ -1,0 +1,81 @@
+{
+  "entradas": [
+    {
+      "nome": "Bruschetta Tradicional",
+      "descricao": "Fatias de pão italiano, cobertas com tomate fresco, manjericão e azeite de oliva.",
+      "preco": 25.00
+    },
+    {
+      "nome": "Carpaccio de Carne",
+      "descricao": "Finas fatias de carne bovina, temperadas com limão, azeite e parmesão.",
+      "preco": 38.00
+    },
+    {
+      "nome": "Caprese",
+      "descricao": "Salada de tomate, muçarela de búfala, manjericão fresco e azeite balsâmico.",
+      "preco": 32.00
+    }
+  ],
+  "pratos_principais": [
+    {
+      "nome": "Spaghetti Alla Carbonara",
+      "descricao": "Massa spaghetti com molho cremoso de ovos, queijo pecorino, pancetta e pimenta preta.",
+      "preco": 58.00
+    },
+    {
+      "nome": "Tagliatelle Al Ragù",
+      "descricao": "Massa tagliatelle com ragu de carne lentamente cozido em molho de tomate.",
+      "preco": 60.00
+    },
+    {
+      "nome": "Risotto Ai Funghi",
+      "descricao": "Risoto cremoso de arroz arbóreo com cogumelos frescos e queijo parmesão.",
+      "preco": 72.00
+    }
+  ],
+  "sobremesas": [
+    {
+      "nome": "Tiramisu",
+      "descricao": "Camadas de biscoito savoiardi embebido em café, mascarpone e cacau.",
+      "preco": 28.00
+    },
+    {
+      "nome": "Panna Cotta com Calda de Frutas Vermelhas",
+      "descricao": "Sobremesa cremosa italiana servida com calda de frutas vermelhas frescas.",
+      "preco": 26.00
+    },
+    {
+      "nome": "Cannoli Siciliani",
+      "descricao": "Casquinha crocante recheada com creme de ricota doce e pedaços de chocolate.",
+      "preco": 30.00
+    }
+  ],
+  "bebidas": [
+    {
+      "nome": "Água Mineral",
+      "preco": 8.00
+    },
+    {
+      "nome": "Suco Natural",
+      "preco": 12.00
+    },
+    {
+      "nome": "Refrigerantes",
+      "preco": 10.00
+    },
+    {
+      "nome": "Vinho Tinto e Vinho Branco",
+      "descricao": "Taças",
+      "preco": 28.00
+    },
+    {
+      "nome": "Vinho Tinto e Vinho Branco",
+      "descricao": "Garrafas",
+      "preco": 120.00
+    },
+    {
+      "nome": "Limoncello",
+      "preco": 22.00
+    }
+  ]
+}

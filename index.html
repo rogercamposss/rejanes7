@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurante Exemplo</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.15.6/dist/umd/supabase.min.js"></script>
+</head>
+
+<body>
+    <!-- Cabeçalho Fixo -->
+    <header>
+        <div class="logo">
+            <a href="#home">
+                <img src="./img/logo.png" alt="Logo do Restaurante Exemp lo">
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#reservas">Reservas</a></li>
+
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Seção Home -->
+    <section id="home">
+        <div class="hero">
+        </div>
+    </section>
+
+    <!-- Seção Menu -->
+    <section id="menu">
+        <div class="menu1">
+            <a>
+                <img src="/img/menu1.png" alt="Menu">
+            </a>
+            <a>
+                <img src="/img/menu2.png" alt="Menu">
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- Seção Reservas -->
+    <section id="reservas">
+        <!-- Mapa das Mesas -->
+        <div class="map-container">
+            <h2 class="s">Escolha sua Mesa</h2>
+            <div class="table-layout" id="table-layout">
+                <div class="table" data-table-number="1">
+                    <img src="/img/mesinha2.png" alt="mesinha2" alt="Icon" width="100" height="100">
+                </div>
+                <div class="table" data-table-number="2"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="3"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="4"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="5"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="6"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="7"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="8"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="9"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="10"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="11"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="12"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="13"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="14"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="15"><img src="/img/mesinha2.png" alt="mesinha2" alt="Icon"
+                        width="100" height="100"></div>
+                <div class="table" data-table-number="16"></div>
+                <div class="table" data-table-number="17"></div>
+
+            </div>
+        </div>
+
+        <!-- Formulário de Reserva -->
+        <div class="reservation-container">
+            <div class="top-reserv"></div>
+
+            <h2>Detalhes da Reserva</h2>
+
+            <div class="reservation-details">
+                <div class="mesinha">
+                    <img src="/img/mesinha.png" alt="mesinha" width="150" height="150">
+                </div>
+                <p id="selected-table">Nenhuma mesa selecionada</p>
+                <div class="inputs">
+                    <form action="/" class="form">
+                        <input type="text" id="name" name="nome" placeholder="Digite seu nome" required>
+                        <input type="number" id="people" name="mesas" placeholder="Digite a quantidade de pessoas"
+                            required>
+                        <input type="datetime-local" id="datetime" name="data" required>
+                        <button type="submit" id="submit">Reservar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Variável global para armazenar o número da mesa selecionada
+            let selectedTableNumber = null;
+
+            // Manipulação do formulário de reserva
+            const form = document.querySelector("form");
+
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+
+                if (!selectedTableNumber) {
+                    alert("Por favor, selecione uma mesa antes de fazer a reserva.");
+                    return;
+                }
+
+                const data = new FormData(e.target);
+                const entries = Object.fromEntries(data.entries());
+
+                // Adiciona o número da mesa selecionada aos dados do formulário
+                entries.tableNumber = selectedTableNumber;
+
+                fetch('/formPost', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(entries)
+                })
+                    .then(response => response.json())
+                    .then(data => console.log("Resposta do backend:", data))
+                    .catch(error => console.error("Erro ao enviar reserva:", error));
+            });
+
+            // Lista de mesas reservadas
+            //const reservedTables = [3, 6, 10];
+            async function fetchOccupiedTables() {
+                try {
+                    const response = await fetch('/occupied-tables');
+                    const occupiedTables = await response.json();
+
+                    return occupiedTables
+                } catch (error) {
+                    console.error('Erro ao buscar mesas ocupadas:', error);
+                }
+            }
+
+
+
+            // Seleção de elementos
+            const tables = document.querySelectorAll('.table');
+            const selectedTableElement = document.getElementById('selected-table');
+
+            // Função para inicializar as mesas
+            async function initializeTables() {
+                const reservedTables = await fetchOccupiedTables();
+                tables.forEach(table => {
+
+                    const tableNumber = parseInt(table.getAttribute('data-table-number'));
+
+                    // Define as mesas como reservadas (vermelho) conforme a lista
+                    if (reservedTables.includes(tableNumber)) {
+                        table.classList.add('reserved');
+                        const tableImage = table.querySelector('img');
+                        if (tableImage) tableImage.src = "/img/mesinha-reserved.png";
+
+                    } else {
+                        table.classList.add('available');
+                        table.addEventListener('click', () => selectTable(table));
+                    }
+                });
+            }
+
+            // Função para selecionar uma mesa
+            function selectTable(selectedTable) {
+                // Remover a seleção anterior
+                tables.forEach(table => {
+                    table.classList.remove('selected');
+                    table.classList.add('available');
+
+                    // Resetar imagem das mesas disponíveis
+                    const tableImage = table.querySelector('img');
+                    if (!table.classList.contains("reserved")) {
+                        if (tableImage) tableImage.src = "/img/mesinha2.png";
+                    }
+                });
+
+                // Marcar a mesa selecionada como verde e atualizar o texto
+                selectedTable.classList.remove('available');
+                selectedTable.classList.add('selected');
+                selectedTableNumber = selectedTable.getAttribute('data-table-number');
+                selectedTableElement.textContent = `Mesa ${selectedTableNumber} Selecionada`;
+
+                // Alterar a imagem da mesa selecionada
+                const selectedImage = selectedTable.querySelector('img');
+                if (selectedImage) selectedImage.src = "/img/mesinha-selected.png";
+            }
+
+            window.addEventListener('DOMContentLoaded', initializeTables);
+        </script>
+
+
+        <!--CHAT BOT-->
+
+        <div class="chatbot" id="chatScript">
+            <div class="chatbot-icon-container">
+                <img id="chatbot-icon" src="/img/chat.png" alt="Chatbot Icon" width="150" height="150"
+                    style="display: none;">
+            </div>
+            <div class="chatbot-header">
+                <img id="chatbot-iconH" src="/img/chat.png" alt="Chatbot Icon" width="30" height="30">
+                <h4>Assistente Virtual</h4>
+                <button id="chatbot-toggle" class="toggle-btn">_</button>
+            </div>
+            <div class="chatbot-body">
+                <div class="chatbot-messages" id="chatbot-messages">
+                    <!-- Mensagens irão aparecer aqui -->
+                </div>
+                <div class="chatbot-input">
+                    <input type="text" id="chatbot-input" placeholder="Digite sua mensagem..." name="inputUser">
+                    <button id="send-btn">.</button>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            const chatbotToggle = document.getElementById('chatbot-toggle');
+            const chatbotHeader = document.querySelector('.chatbot-header');
+            const chatbotBody = document.querySelector('.chatbot-body');
+            const chatbotFull = document.querySelector('.chatbot');
+            const messagesContainer = document.getElementById('chatbot-messages');
+            const sendBtn = document.getElementById('send-btn');
+            const inputField = document.getElementById('chatbot-input');
+            const menu = "Entradas: - Bruschetta Tradicional: Fatias de pão italiano, cobertas com tomate fresco, manjericão e azeite de oliva. Preço: R$ 25,00 - Carpaccio de Carne: Finas fatias de carne bovina, temperadas com limão, azeite e parmesão. Preço: R$ 38,00 - Caprese: Salada de tomate, muçarela de búfala, manjericão fresco e azeite balsâmico. Preço: R$ 32,00 Pratos Principais: - Spaghetti Alla Carbonara: Massa spaghetti com molho cremoso de ovos, queijo pecorino, pancetta e pimenta preta. Preço: R$ 58,00 - Tagliatelle Al Ragù: Massa tagliatelle com ragu de carne lentamente cozido em molho de tomate. Preço: R$ 60,00 - Risotto Ai Funghi: Risoto cremoso de arroz arbóreo com cogumelos frescos e queijo parmesão. Preço: R$ 72,00 Sobremesas: - Tiramisu: Camadas de biscoito savoiardi embebido em café, mascarpone e cacau. Preço: R$ 28,00 - Panna Cotta com Calda de Frutas Vermelhas: Sobremesa cremosa italiana servida com calda de frutas vermelhas frescas. Preço: R$ 26,00 - Cannoli Siciliani: Casquinha crocante recheada com creme de ricota doce e pedaços de chocolate. Preço: R$ 30,00 Bebidas: - Água Mineral: Preço: R$ 8,00 - Suco Natural: Preço: R$ 12,00 - Refrigerantes: Preço: R$ 10,00 - Vinho Tinto e Vinho Branco (Taças): Preço: R$ 28,00 - Vinho Tinto e Vinho Branco (Garrafas): Preço: R$ 120,00 - Limoncello: Preço: R$ 22,00";
+            const chatHistory = []
+
+
+
+
+            /*---------------------------------------------------------------------------------------------*/
+            //Função para adicionar as mensagens na tela 
+            function addMessage(text, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', sender);
+                messageDiv.textContent = text;
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            /*---------------------------------------------------------------------------------------------*/
+
+
+
+            /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+            //Função para chamar a API no backend
+            sendBtn.addEventListener('click', async () => {
+                const userMessage = inputField.value.trim();
+                chatHistory.push(userMessage);  // Adiciona a mensagem ao histórico
+
+                if (userMessage) {
+                    addMessage(userMessage, 'user');
+                    const mensagemComCardapio = `Cardápio: ${menu}. Com base nisso (não use negrito ou formatação de texto, apenas seja legal, nunca diga para consultar o cardapio, sempre jugira algo e dia gos valores se for perguntado), sugira de forma direta, simples, objetiva, amigável e gentil algo para alguém que diz ${userMessage}.`;
+
+                    try {
+                        const response = await fetch('/api/chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                inputUser: mensagemComCardapio,
+                                history: chatHistory
+                            })
+
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Erro na comunicação com o servidor');
+                        }
+
+                        const data = await response.json();
+                        console.log("RESPOSTA DO GEMINI NO FRONT", data.message);
+                        addMessage(data.message, 'bot');
+
+
+                    } catch (error) {
+                        console.error('Erro:', error);
+                        addMessage('Desculpe, houve um erro ao processar sua solicitação.', 'bot');
+                    }
+
+
+                    inputField.value = '';  // Limpa o campo de entrada
+                }
+            });
+            /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+            /*---------------------------------------------------------------------------------------------*/
+            //Botão de colapsar o char 
+            chatbotToggle.addEventListener('click', () => {
+                chatbotHeader.classList.toggle('collapsed');
+                chatbotBody.classList.toggle('collapsed');
+                chatbotFull.classList.toggle('collapsed');
+                chatbotToggle.textContent = chatbotBody.classList.contains('collapsed') ? '^' : '_';
+
+
+                const chatbotIcon = document.getElementById('chatbot-icon');
+                chatbotIcon.style.display = chatbotBody.classList.contains('collapsed') ? 'block' : 'none';
+            });
+            document.getElementById('chatbot-icon').addEventListener('click', () => {
+                chatbotHeader.classList.remove('collapsed');
+                chatbotBody.classList.remove('collapsed');
+                chatbotFull.classList.remove('collapsed');
+                chatbotToggle.textContent = '_';
+                document.getElementById('chatbot-icon').style.display = 'none';
+            });
+            /*---------------------------------------------------------------------------------------------*/
+
+
+
+
+        </script>
+
+
+
+
+
+
+
+
+</html>

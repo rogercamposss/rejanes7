@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation Management</title>
+    <style>
+        /* CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th,
+        .table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #f2f2f2;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Gerenciamento de Reservas</h1>
+        </div>
+
+        <table class="table" id="reservationTable">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data e Hora</th>
+                    <th>Qtd Pessoas</th>
+                    <th>Mesa</th>
+                    <th>Alterar as reservas</th>
+                </tr>
+            </thead>
+            <tbody id="reservationTableBody">
+                <!-- Reservation data will be dynamically inserted here -->
+            </tbody>
+        </table>
+
+        <div class="actions">
+            <button class="btn" id="addReservationBtn">Adicionar Reserva</button>
+        </div>
+
+        <div id="modalContainer" class="modal">
+            <div class="modal-content">
+                <h2 id="modalTitle">Adicionar Reserva</h2>
+                <form id="reservationForm">
+                    <label for="name">Nome:</label>
+                    <input type="text" id="name" name="name" required>
+
+                    <label for="date">Data:</label>
+                    <input type="date" id="date" name="date" required>
+
+                    <label for="time">Hora:</label>
+                    <input type="time" id="time" name="time" required>
+
+                    <label for="guests">Qtd Pessoas:</label>
+                    <input type="number" id="guests" name="guests" required>
+
+                    <label for="table">Mesa:</label>
+                    <input type="number" id="table" name="table" required>
+
+                    <div class="actions">
+                        <button type="submit" class="btn">Save</button>
+                        <button type="button" class="btn btn-danger" id="closeModalBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const reservationTable = document.getElementById('reservationTableBody');
+        const addReservationBtn = document.getElementById('addReservationBtn');
+        const modalContainer = document.getElementById('modalContainer');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const reservationForm = document.getElementById('reservationForm');
+        const modalTitle = document.getElementById('modalTitle');
+
+        let selectedReservation = null;
+
+        // Fetch reservations from the server
+        async function fetchReservations() {
+            try {
+                const response = await fetch('/api/reservations');
+                const reservations = await response.json();
+                displayReservations(reservations);
+            } catch (error) {
+                console.error('Error fetching reservations:', error);
+            }
+        }
+
+        // Display reservations in the table
+        function displayReservations(reservations) {
+            reservationTable.innerHTML = '';
+            reservations.forEach((reservation) => {
+                const row = document.createElement('tr');
+                
+                    reservationTable.innerHTML += `
+                <tr>
+                    <td>${reservation.name}</td>
+                    <td>${new Date(reservation.date).toLocaleString()}</td>
+                    <td>${reservation.guests}</td>
+                    <td>${reservation.table_num}</td>
+                <td>
+                    <button class="btn" onclick="editReservation('${reservation.id}')">Edit</button>
+                    <button class="btn btn-danger" onclick="deleteReservation('${reservation.id}')">Delete</button>
+                </td>
+                </tr>
+                `;
+
+                reservationTable.appendChild(row);
+            });
+        }
+
+        addReservationBtn.addEventListener('click', () => {
+            selectedReservation = null;
+            modalTitle.textContent = 'Add Reservation';
+            modalContainer.style.display = 'block';
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            modalContainer.style.display = 'none';
+        });
+
+        reservationForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                guests: parseInt(document.getElementById('guests').value),
+                table_num: parseInt(document.getElementById('table').value)
+            };
+
+            try {
+                let response;
+                if (selectedReservation) {
+                    response = await fetch(`/api/reservations/${selectedReservation}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                } else {
+                    response = await fetch('/api/reservations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                }
+
+                const reservation = await response.json();
+                fetchReservations();
+                modalContainer.style.display = 'none';
+            } catch (error) {
+                console.error('Error saving reservation:', error);
+            }
+        });
+
+        // Edit a reservation
+        function editReservation(id) {
+            selectedReservation = id;
+            modalTitle.textContent = 'Edit Reservation';
+            modalContainer.style.display = 'block';
+
+            // Prefill the form with the reservation data
+            const reservation = reservations.find((res) => res.id === id);
+            document.getElementById('name').value = reservation.name;
+            document.getElementById('date').value = new Date(reservation.date).toISOString().slice(0, 10);
+            document.getElementById('time').value = new Date(reservation.date).toISOString().slice(11, 16);
+            document.getElementById('guests').value = reservation.guests;
+            document.getElementById('table').value = reservation.table;
+        }
+
+        // Delete a reservation
+        async function deleteReservation(id) {
+            try {
+                await fetch(`/api/reservations/${id}`, {
+                    method: 'DELETE'
+                });
+                fetchReservations();
+            } catch (error) {
+                console.error('Error deleting reservation:', error);
+            }
+        }
+
+        // Fetch reservations on page load
+        fetchReservations();
+    </script>
+</body>
+
+</html>
